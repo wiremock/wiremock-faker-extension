@@ -1,154 +1,155 @@
 buildscript {
-    repositories {
-        maven {
-            url "https://oss.sonatype.org"
-        }
-        mavenCentral()
+  repositories {
+    maven {
+      url "https://oss.sonatype.org"
     }
+    mavenCentral()
+  }
 }
 
 plugins {
-    id 'java-library'
-    id 'signing'
-    id 'maven-publish'
-    id 'idea'
-    id 'eclipse'
-    id 'project-report'
-    id 'com.diffplug.spotless' version '6.21.0'
+  id 'java-library'
+  id 'signing'
+  id 'maven-publish'
+  id 'idea'
+  id 'eclipse'
+  id 'project-report'
+  id 'com.diffplug.spotless' version '6.21.0'
 }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
+  mavenLocal()
+  mavenCentral()
 }
 
 group 'org.wiremock'
 version = "0.1.0"
 
 allprojects {
-    sourceCompatibility = 11
-    targetCompatibility = 11
+  sourceCompatibility = 11
+  targetCompatibility = 11
 
-    ext {
-        versions = [
-                wiremock: "3.2.0"
-        ]
+  ext {
+    versions = [
+      wiremock: "3.2.0"
+    ]
 
-        repoUser = this.hasProperty('sonatypeUser') ? sonatypeUser : 'default'
-        repoPassword = this.hasProperty('sonatypePassword') ? sonatypePassword : 'default'
+    repoUser = this.hasProperty('sonatypeUser') ? sonatypeUser : 'default'
+    repoPassword = this.hasProperty('sonatypePassword') ? sonatypePassword : 'default'
 
-        pomInfo = {
-            name 'WireMock Extension for Faker'
-            url 'https://wiremock.org'
-            scm {
-                // TODO setup
-                connection 'https://github.com/wiremock/wiremock-grpc-extension.git'
-                developerConnection 'https://github.com/wiremock/wiremock-grpc-extension.git'
-                url 'https://github.com/wiremock/wiremock-grpc-extension'
-            }
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/license/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
+    pomInfo = {
+      name 'WireMock Extension for Faker'
+      url 'https://wiremock.org'
+      scm {
+        // TODO setup
+        connection 'https://github.com/wiremock/wiremock-grpc-extension.git'
+        developerConnection 'https://github.com/wiremock/wiremock-grpc-extension.git'
+        url 'https://github.com/wiremock/wiremock-grpc-extension'
+      }
+      licenses {
+        license {
+          name 'The Apache Software License, Version 2.0'
+          url 'http://www.apache.org/license/LICENSE-2.0.txt'
+          distribution 'repo'
         }
+      }
     }
+  }
 }
 
-spotless {
+allprojects {
+  apply plugin: 'com.diffplug.spotless'
+  spotless {
     java {
-        target 'src/**/*.java'
-        googleJavaFormat('1.17.0')
-        // TODO setup
-        licenseHeaderFile "${rootDir}/gradle/spotless.java.license.txt"
-        ratchetFrom 'origin/main'
-        trimTrailingWhitespace()
-        endWithNewline()
-        targetExclude '**/Tmp*.java'
+      target 'src/**/*.java'
+      googleJavaFormat('1.17.0')
+      ratchetFrom 'origin/main'
+      trimTrailingWhitespace()
+      endWithNewline()
+      targetExclude '**/Tmp*.java'
     }
     groovyGradle {
-        target '**/*.gradle'
-        greclipse()
-        indentWithSpaces(2)
-        trimTrailingWhitespace()
-        endWithNewline()
+      target '**/*.gradle'
+      greclipse()
+      indentWithSpaces(2)
+      trimTrailingWhitespace()
+      endWithNewline()
     }
     json {
-        target 'src/**/*.json'
-        targetExclude '**/tmp*.json', 'src/test/resources/sample.json', 'src/main/resources/swagger/*.json', 'src/test/resources/filesource/subdir/deepfile.json', 'src/test/resources/schema-validation/*.json'
-        simple().indentWithSpaces(2)
+      target 'src/**/*.json'
+      targetExclude '**/tmp*.json', 'src/test/resources/sample.json', 'src/main/resources/swagger/*.json', 'src/test/resources/filesource/subdir/deepfile.json', 'src/test/resources/schema-validation/*.json'
+      simple().indentWithSpaces(2)
     }
+  }
 }
 
 dependencies {
-    api "org.wiremock:wiremock:$versions.wiremock"
+  api "org.wiremock:wiremock:$versions.wiremock"
 
-    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+  implementation 'javax.annotation:javax.annotation-api:1.3.2'
 
-    //  testImplementation project(":")
-    testImplementation(platform('org.junit:junit-bom:5.10.0'))
-    testImplementation "org.junit.jupiter:junit-jupiter"
-    testImplementation "org.hamcrest:hamcrest-core:2.2"
-    testImplementation "org.hamcrest:hamcrest-library:2.2"
-    testImplementation 'org.awaitility:awaitility:4.2.0'
+  //  testImplementation project(":")
+  testImplementation(platform('org.junit:junit-bom:5.10.0'))
+  testImplementation "org.junit.jupiter:junit-jupiter"
+  testImplementation "org.hamcrest:hamcrest-core:2.2"
+  testImplementation "org.hamcrest:hamcrest-library:2.2"
+  testImplementation 'org.awaitility:awaitility:4.2.0'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set('sources')
-    from sourceSets.main.allSource
+  archiveClassifier.set('sources')
+  from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier.set('javadoc')
-    from javadoc.destinationDir
+  archiveClassifier.set('javadoc')
+  from javadoc.destinationDir
 }
 
 task testJar(type: Jar, dependsOn: testClasses) {
-    archiveClassifier.set('tests')
-    from sourceSets.test.output
+  archiveClassifier.set('tests')
+  from sourceSets.test.output
 }
 
 signing {
-    required {
-        !version.toString().contains("SNAPSHOT") && (gradle.taskGraph.hasTask("uploadArchives") || gradle.taskGraph.hasTask("publish"))
-    }
-    sign publishing.publications
+  required {
+    !version.toString().contains("SNAPSHOT") && (gradle.taskGraph.hasTask("uploadArchives") || gradle.taskGraph.hasTask("publish"))
+  }
+  sign publishing.publications
 }
 
 publishing {
-    repositories {
-        maven {
-            url 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-            credentials {
-                username repoUser
-                password repoPassword
-            }
-        }
+  repositories {
+    maven {
+      url 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+      credentials {
+        username repoUser
+        password repoPassword
+      }
     }
+  }
 
-    publications {
-        main(MavenPublication) { publication ->
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-            artifact testJar
+  publications {
+    main(MavenPublication) { publication ->
+      from components.java
+      artifact sourcesJar
+      artifact javadocJar
+      artifact testJar
 
-            pom.packaging 'jar'
-            pom.withXml {
-                asNode().appendNode('description', 'Add fake data to WireMock responses')
-                asNode().children().last() + pomInfo
-            }
-        }
+      pom.packaging 'jar'
+      pom.withXml {
+        asNode().appendNode('description', 'Add fake data to WireMock responses')
+        asNode().children().last() + pomInfo
+      }
     }
+  }
 }
 
 test {
-    testLogging {
-        events "PASSED", "FAILED", "SKIPPED"
-        exceptionFormat "full"
-    }
+  testLogging {
+    events "PASSED", "FAILED", "SKIPPED"
+    exceptionFormat "full"
+  }
 }
 
 project.tasks.signMainPublication.dependsOn jar
@@ -156,9 +157,9 @@ project.tasks.signMainPublication.dependsOn jar
 assemble.dependsOn clean, jar
 
 task release {
-    dependsOn clean, assemble, publishAllPublicationsToMavenRepository
+  dependsOn clean, assemble, publishAllPublicationsToMavenRepository
 }
 
 task localRelease {
-    dependsOn clean, assemble, publishToMavenLocal
+  dependsOn clean, assemble, publishToMavenLocal
 }
