@@ -42,5 +42,4 @@ jobs:
         restore-keys: ${{ runner.os }}-gradle
         
     - name: Test with Gradle
-      if: ${{ !(matrix.os == 'ubuntu-latest' && matrix.jdk == 11 && github.event_name == 'push') }}
       run: ./gradlew check --stacktrace --no-daemon
