@@ -8,13 +8,11 @@ buildscript {
 }
 
 plugins {
-  id 'java-library'
-  id 'signing'
-  id 'maven-publish'
   id 'idea'
   id 'eclipse'
   id 'project-report'
   id 'com.diffplug.spotless' version '6.21.0'
+  id 'org.wiremock.tools.gradle.wiremock-extension-convention' version '0.1.1'
 }
 
 repositories {
@@ -22,38 +20,11 @@ repositories {
   mavenCentral()
 }
 
-group 'org.wiremock'
-version = "0.1.0"
-
-allprojects {
-  sourceCompatibility = 11
-  targetCompatibility = 11
-
+projects {
   ext {
     versions = [
-      wiremock: "3.2.0"
+      wiremock: "3.3.1"
     ]
-
-    repoUser = this.hasProperty('sonatypeUser') ? sonatypeUser : 'default'
-    repoPassword = this.hasProperty('sonatypePassword') ? sonatypePassword : 'default'
-
-    pomInfo = {
-      name 'WireMock Extension for Faker'
-      url 'https://wiremock.org'
-      scm {
-        // TODO setup
-        connection 'https://github.com/wiremock/wiremock-grpc-extension.git'
-        developerConnection 'https://github.com/wiremock/wiremock-grpc-extension.git'
-        url 'https://github.com/wiremock/wiremock-grpc-extension'
-      }
-      licenses {
-        license {
-          name 'The Apache Software License, Version 2.0'
-          url 'http://www.apache.org/license/LICENSE-2.0.txt'
-          distribution 'repo'
-        }
-      }
-    }
   }
 }
 
@@ -88,12 +59,6 @@ dependencies {
   //  1.x is not maintained but we need to use to support Java 11. It is in a better state than java-faker, which is also not maintained. Bump to 2.x once we deprecate support for Java 11.
   implementation 'net.datafaker:datafaker:1.7.0'
 
-  //  testImplementation project(":")
-  testImplementation(platform('org.junit:junit-bom:5.10.0'))
-  testImplementation "org.junit.jupiter:junit-jupiter"
-  testImplementation "org.hamcrest:hamcrest-core:2.2"
-  testImplementation "org.hamcrest:hamcrest-library:2.2"
-  testImplementation 'org.awaitility:awaitility:4.2.0'
   testImplementation("org.wiremock:wiremock:$versions.wiremock") {
     artifact {
       classifier = 'tests'
@@ -101,53 +66,9 @@ dependencies {
   }
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-  archiveClassifier.set('sources')
-  from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-  archiveClassifier.set('javadoc')
-  from javadoc.destinationDir
-}
-
-task testJar(type: Jar, dependsOn: testClasses) {
-  archiveClassifier.set('tests')
-  from sourceSets.test.output
-}
-
-signing {
-  required {
-    !version.toString().contains("SNAPSHOT") && (gradle.taskGraph.hasTask("uploadArchives") || gradle.taskGraph.hasTask("publish"))
-  }
-  sign publishing.publications
-}
-
-publishing {
-  repositories {
-    maven {
-      url 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-      credentials {
-        username repoUser
-        password repoPassword
-      }
-    }
-  }
-
-  publications {
-    main(MavenPublication) { publication ->
-      from components.java
-      artifact sourcesJar
-      artifact javadocJar
-      artifact testJar
-
-      pom.packaging 'jar'
-      pom.withXml {
-        asNode().appendNode('description', 'Add fake data to WireMock responses')
-        asNode().children().last() + pomInfo
-      }
-    }
-  }
+shadowJar {
+  relocate "com.github.jknack", 'wiremock.com.github.jknack'
+  relocate "net.datafaker", 'wiremock.net.datafaker'
 }
 
 test {
@@ -156,16 +77,4 @@ test {
     events "PASSED", "FAILED", "SKIPPED"
     exceptionFormat "full"
   }
-}
-
-project.tasks.signMainPublication.dependsOn jar
-
-assemble.dependsOn clean, jar
-
-task release {
-  dependsOn clean, assemble, publishAllPublicationsToMavenRepository
-}
-
-task localRelease {
-  dependsOn clean, assemble, publishToMavenLocal
 }
