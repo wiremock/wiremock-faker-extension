@@ -34,8 +34,10 @@ new WireMockServer(wireMockConfig().extensions(RandomExtension.class));
 
 ### Step 3: Use it in your stubs!
 
+{% raw %}
 ```yaml
 {{ random 'Name.first_name' }}
 ```
+{% endraw %}
 
 This will generate random first names in the `en-US` locale for every request.
