@@ -10,9 +10,9 @@ For Maven users:
 
 ```xml
 <dependency>
-    <groupId>org.wiremock</groupId>
-    <artifactId>wiremock-faker-extension</artifactId>
-    <version>0.1.0</version>
+    <groupId>org.wiremock.extensions</groupId>
+    <artifactId>wiremock-faker-extension-standalone</artifactId>
+    <version>0.1.1</version>
 </dependency>
 ```
 
@@ -20,7 +20,7 @@ For Gradle users:
 
 ```groovy
 dependencies {
-    implementation 'org.wiremock:wiremock-faker-extension:0.1.0'
+    implementation 'org.wiremock.extensions:wiremock-faker-extension-standalone:0.1.1'
 }
 ```
 
@@ -41,3 +41,8 @@ new WireMockServer(wireMockConfig().extensions(RandomExtension.class));
 {% endraw %}
 
 This will generate random first names in the `en-US` locale for every request.
+
+
+### Technical notes
+This library brings `net.datafaker:datafaker` as transitive dependency, which may result in conflicts at building time. 
+If that's the case, the `net.datafaker:datafaker` dependency needs to be excluded. 
