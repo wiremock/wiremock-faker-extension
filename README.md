@@ -35,7 +35,7 @@ new WireMockServer(wireMockConfig().extensions(RandomExtension.class));
 ### Step 3: Use it in your stubs!
 
 {% raw %}
-```yaml
+```handlebars
 {{ random 'Name.first_name' }}
 ```
 {% endraw %}
@@ -46,3 +46,5 @@ This will generate random first names in the `en-US` locale for every request.
 ### Technical notes
 This library brings `net.datafaker:datafaker` as transitive dependency, which may result in conflicts at building time. 
 If that's the case, the `net.datafaker:datafaker` dependency needs to be excluded. 
+
+For a full reference of the available keys, see the [Reference Documentation](./docs/reference.md).
