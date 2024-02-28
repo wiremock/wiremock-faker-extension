@@ -1,3 +1,8 @@
+---
+# YAML header
+render_macros: false
+---
+
 # Faker Extension for WireMock
 
 Uses [Data Faker](https://github.com/datafaker-net/datafaker) to generate random, fake data for using in WireMock responses. 
@@ -11,7 +16,7 @@ For Maven users:
 ```xml
 <dependency>
     <groupId>org.wiremock.extensions</groupId>
-    <artifactId>wiremock-faker-extension-standalone</artifactId>
+    <artifactId>wiremock-faker-extension</artifactId>
     <version>0.1.1</version>
 </dependency>
 ```
