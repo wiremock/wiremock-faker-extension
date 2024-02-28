@@ -17,7 +17,7 @@ For Maven users:
 <dependency>
     <groupId>org.wiremock.extensions</groupId>
     <artifactId>wiremock-faker-extension</artifactId>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -25,7 +25,7 @@ For Gradle users:
 
 ```groovy
 dependencies {
-    implementation 'org.wiremock.extensions:wiremock-faker-extension-standalone:0.1.1'
+    implementation 'org.wiremock.extensions:wiremock-faker-extension-standalone:0.2.0'
 }
 ```
 
