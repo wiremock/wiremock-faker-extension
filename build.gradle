@@ -57,7 +57,7 @@ allprojects {
 dependencies {
   api "org.wiremock:wiremock:$versions.wiremock"
   //  1.x is not maintained but we need to use to support Java 11. It is in a better state than java-faker, which is also not maintained. Bump to 2.x once we deprecate support for Java 11.
-  implementation 'net.datafaker:datafaker:1.7.0'
+  implementation 'net.datafaker:datafaker:1.9.0'
 
   testImplementation("org.wiremock:wiremock:$versions.wiremock") {
     artifact {
