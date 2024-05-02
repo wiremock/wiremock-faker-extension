@@ -47,11 +47,16 @@ new WireMockServer(wireMockConfig().extensions(RandomExtension.class));
 
 This will generate random first names in the `en-US` locale for every request.
 
-You can optionally add the `seed` parameter to generate the same value for the same seed:
+You can optionally add:
+* the `seed` parameter to always generate the same value for the same seed
+* the `locale` parameter to generate values in a specific locale
+
+{% raw %}
+```handle
 
 {% raw %}
 ```handlebars
-{{ random 'Name.first_name' seed=1234 }}
+{{ random 'Name.first_name' seed=1234 locale='es' }}
 ```
 %}
 
