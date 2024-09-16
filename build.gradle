@@ -11,8 +11,8 @@ plugins {
   id 'idea'
   id 'eclipse'
   id 'project-report'
-  id 'com.diffplug.spotless' version '6.21.0'
-  id 'org.wiremock.tools.gradle.wiremock-extension-convention' version '0.1.2'
+  id 'com.diffplug.spotless' version '6.25.0'
+  id 'org.wiremock.tools.gradle.wiremock-extension-convention' version '0.2.0'
 }
 
 repositories {
@@ -23,7 +23,7 @@ repositories {
 projects {
   ext {
     versions = [
-      wiremock: "3.3.1"
+      wiremock: "3.5.2"
     ]
   }
 }
@@ -57,7 +57,7 @@ allprojects {
 dependencies {
   api "org.wiremock:wiremock:$versions.wiremock"
   //  1.x is not maintained but we need to use to support Java 11. It is in a better state than java-faker, which is also not maintained. Bump to 2.x once we deprecate support for Java 11.
-  implementation 'net.datafaker:datafaker:1.7.0'
+  implementation 'net.datafaker:datafaker:1.9.0'
 
   testImplementation("org.wiremock:wiremock:$versions.wiremock") {
     artifact {
