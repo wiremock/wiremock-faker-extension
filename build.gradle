@@ -23,7 +23,7 @@ repositories {
 projects {
   ext {
     versions = [
-      wiremock: "3.5.2"
+      wiremock: "3.10.0"
     ]
   }
 }
