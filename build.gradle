@@ -12,7 +12,8 @@ plugins {
   id 'eclipse'
   id 'project-report'
   id 'com.diffplug.spotless' version '6.25.0'
-  id 'org.wiremock.tools.gradle.wiremock-extension-convention' version '0.2.0'
+  id 'org.wiremock.tools.gradle.java' version '0.6.0-beta.3'
+  id 'org.wiremock.tools.gradle.publishing' version '0.6.0-beta.3'
 }
 
 repositories {
@@ -20,12 +21,9 @@ repositories {
   mavenCentral()
 }
 
-projects {
-  ext {
-    versions = [
-      wiremock: "3.5.2"
-    ]
-  }
+java {
+  sourceCompatibility = 17
+  targetCompatibility = 17
 }
 
 allprojects {
@@ -55,20 +53,31 @@ allprojects {
 }
 
 dependencies {
-  api "org.wiremock:wiremock:$versions.wiremock"
-  //  1.x is not maintained but we need to use to support Java 11. It is in a better state than java-faker, which is also not maintained. Bump to 2.x once we deprecate support for Java 11.
-  implementation 'net.datafaker:datafaker:1.9.0'
+  api "org.wiremock:wiremock-core:$versions.wiremock"
+  api 'com.github.jknack:handlebars:4.5.0'
+  implementation 'net.datafaker:datafaker:2.5.3'
 
+  testImplementation platform('org.junit:junit-bom:5.14.1')
+  testImplementation 'org.junit.jupiter:junit-jupiter-api'
+  testImplementation 'org.junit.jupiter:junit-jupiter-params'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter'
+  testRuntimeOnly 'org.junit.platform:junit-platform-engine:1.14.1'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.1'
   testImplementation("org.wiremock:wiremock:$versions.wiremock") {
     artifact {
       classifier = 'tests'
     }
   }
+  testImplementation(testFixtures("org.wiremock:wiremock:$versions.wiremock"))
+  testImplementation("org.wiremock:wiremock-junit5:$versions.wiremock")
+  testImplementation('org.hamcrest:hamcrest:3.0')
 }
 
 shadowJar {
   relocate "com.github.jknack", 'wiremock.com.github.jknack'
   relocate "net.datafaker", 'wiremock.net.datafaker'
+
+  exclude("META-INF/versions/21/**")
 }
 
 test {
@@ -76,5 +85,24 @@ test {
   testLogging {
     events "PASSED", "FAILED", "SKIPPED"
     exceptionFormat "full"
+  }
+}
+
+tasks.check {
+  dependsOn(buildHealth)
+}
+
+dependencyAnalysis {
+  issues {
+    all {
+      onAny {
+        severity("fail")
+      }
+    }
+  }
+  usage {
+    analysis {
+      checkSuperClasses(true)
+    }
   }
 }
