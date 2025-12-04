@@ -5,9 +5,8 @@ import static org.hamcrest.Matchers.is;
 
 import com.github.tomakehurst.wiremock.extension.responsetemplating.helpers.HandlebarsHelperTestBase;
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Random;
-import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +17,7 @@ public class RandomHelperTest extends HandlebarsHelperTestBase {
 
   @BeforeEach
   public void init() {
-    helper = new RandomHelper();
+    helper = new RandomHelper(new Random(123456789L));
   }
 
   @Test
@@ -31,13 +30,37 @@ public class RandomHelperTest extends HandlebarsHelperTestBase {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {"123456789, Name.firstName, Herb", "123456789, Name.lastName, Hauck"})
-  public void returnsRandomValue(int seed, String expression, String expected) throws Exception {
-    Field newFaker = helper.getClass().getDeclaredField("faker");
-    newFaker.setAccessible(true);
-    newFaker.set(helper, new Faker(new Random(seed)));
-
+  @CsvSource(
+      value = {
+        "Name.firstName, Herb",
+        "Name.lastName, Hauck",
+      })
+  public void returnsRandomValue(String expression, String expected) throws Exception {
     String actual = renderHelperValue(helper, expression);
+    assertThat(actual, is(expected));
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      value = {
+        ", , Herb",
+        ", es, José María",
+        ", fr_QC, Clément",
+        "1, , Donny",
+        "hello, , Nickie",
+        "test, de, Franz"
+      })
+  public void rendersSeededLocalizedRandomValue(Object seed, Object locale, String expected) {
+    final var map = new HashMap<String, Object>();
+    if (seed != null) {
+      map.put("seed", seed);
+    }
+    if (locale != null) {
+      map.put("locale", locale);
+    }
+
+    final var actual = helper.apply("Name.firstName", createOptions(map));
+
     assertThat(actual, is(expected));
   }
 }
